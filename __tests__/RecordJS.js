@@ -1,4 +1,4 @@
-jest.autoMockOff();
+
 
 var Immutable = require('immutable');
 var Record = Immutable.Record;

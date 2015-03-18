@@ -1,7 +1,9 @@
-jest.autoMockOff();
+function forceModuleReload(moduleId) {
+  delete require.cache[require.resolve(moduleId)];
+}
 
 var Immutable1 = require('../');
-jest.resetModuleRegistry();
+forceModuleReload('../');
 var Immutable2 = require('../');
 
 describe('MultiRequire', () => {

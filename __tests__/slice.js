@@ -1,7 +1,7 @@
-///<reference path='../resources/jest.d.ts'/>
-///<reference path='../dist/immutable.d.ts'/>
 
-jest.autoMockOff();
+
+
+
 
 var jasmineCheck = require('jasmine-check');
 jasmineCheck.install();
@@ -31,7 +31,7 @@ describe('slice', () => {
   it('slices a sparse indexed sequence', () => {
     expect(Seq([1,,2,,3,,4,,5,,6]).slice(1).toArray()).toEqual([,2,,3,,4,,5,,6]);
     expect(Seq([1,,2,,3,,4,,5,,6]).slice(2).toArray()).toEqual([2,,3,,4,,5,,6]);
-    expect(Seq([1,,2,,3,,4,,5,,6]).slice(3, -3).toArray()).toEqual([,3,,4,,,]); // one trailing hole.
+    expect(Seq([1,,2,,3,,4,,5,,6]).slice(3, -3).toArray()).toEqual([,3,,4,,]); // one trailing hole.
   })
 
   it('can maintain indices for an keyed indexed sequence', () => {

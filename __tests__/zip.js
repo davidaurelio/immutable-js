@@ -1,12 +1,12 @@
-///<reference path='../resources/jest.d.ts'/>
-///<reference path='../dist/immutable.d.ts'/>
 
-jest.autoMockOff();
+
+
+
 
 var I = require('immutable');
 
 var jasmineCheck = require('jasmine-check');
-jasmineCheck.install(this);
+jasmineCheck.install();
 
 describe('zip', () => {
 

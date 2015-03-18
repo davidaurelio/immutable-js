@@ -1,7 +1,7 @@
-///<reference path='../resources/jest.d.ts'/>
-///<reference path='../dist/immutable.d.ts'/>
 
-jest.autoMockOff();
+
+
+
 
 var jasmineCheck = require('jasmine-check');
 jasmineCheck.install();
@@ -82,9 +82,9 @@ describe('Map', () => {
 
   it('iterates values', () => {
     var m = Map({'a': 'A', 'b': 'B', 'c': 'C'});
-    var iterator = jest.genMockFunction();
+    var iterator = jasmine.createSpy();
     m.forEach(iterator);
-    expect(iterator.mock.calls).toEqual([
+    expect(iterator.argsForCall).toEqual([
       ['A', 'a', m],
       ['B', 'b', m],
       ['C', 'c', m]

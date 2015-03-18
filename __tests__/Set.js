@@ -1,7 +1,7 @@
-///<reference path='../resources/jest.d.ts'/>
-///<reference path='../dist/immutable.d.ts'/>
 
-jest.autoMockOff();
+
+
+
 
 var Immutable = require('immutable');
 var Set = Immutable.Set;
@@ -99,9 +99,10 @@ describe('Set', () => {
 
   it('iterates values', () => {
     var s = Set.of(1,2,3);
-    var iterator = jest.genMockFunction();
+    var iterator = jasmine.createSpy();
     s.forEach(iterator);
-    expect(iterator.mock.calls).toEqual([
+
+    expect(iterator.argsForCall).toEqual([
       [1, 1, s],
       [2, 2, s],
       [3, 3, s]

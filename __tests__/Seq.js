@@ -1,7 +1,7 @@
-///<reference path='../resources/jest.d.ts'/>
-///<reference path='../dist/immutable.d.ts'/>
 
-jest.autoMockOff();
+
+
+
 
 var Immutable = require('immutable');
 

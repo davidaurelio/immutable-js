@@ -1,8 +1,8 @@
-///<reference path='../../../resources/jest.d.ts'/>
+
 ///<reference path='../../../dist/immutable.d.ts'/>
 ///<reference path='../index.d.ts'/>
 
-jest.autoMockOff();
+
 
 var Immutable = require('immutable');
 var Cursor = require('immutable/contrib/cursor');
@@ -13,7 +13,27 @@ jasmine.getEnv().addEqualityTester((a, b) =>
     jasmine.undefined
 );
 
+function returnOnce(spy, value) {
+  spy.andCallFake(function() {
+    spy.andReturn();
+    return value;
+  });
+}
+
 describe('Cursor', () => {
+
+  beforeEach(function() {
+    this.addMatchers({
+      lastCalledWith: function() {
+        var expectedArgs = jasmine.util.argsToArray(arguments);
+        if (!jasmine.isSpy(this.actual)) {
+          throw new Error('Expected a spy, but got ' + jasmine.pp(this.actual) + '.');
+        }
+
+        return this.env.equals_(this.actual.argsForCall.slice(-1)[0], expectedArgs);
+      }
+    });
+  });
 
   var json = { a: { b: { c: 1 } } };
 
@@ -67,7 +87,7 @@ describe('Cursor', () => {
   });
 
   it('updates at its path', () => {
-    var onChange = jest.genMockFunction();
+    var onChange = jasmine.createSpy();
 
     var data = Immutable.fromJS(json);
     var aCursor = Cursor.from(data, 'a', onChange);
@@ -106,16 +126,16 @@ describe('Cursor', () => {
     );
 
     // and update has been called exactly thrice.
-    expect(onChange.mock.calls.length).toBe(3);
+    expect(onChange.calls.length).toBe(3);
   });
 
   it('updates with the return value of onChange', () => {
-    var onChange = jest.genMockFunction();
+    var onChange = jasmine.createSpy();
 
     var data = Immutable.fromJS(json);
     var deepCursor = Cursor.from(data, ['a', 'b', 'c'], onChange);
 
-    onChange.mockReturnValueOnce(undefined);
+    returnOnce(onChange, undefined);
     // onChange returning undefined has no effect
     var newCursor = deepCursor.update(x => x + 1);
     expect(newCursor.deref()).toBe(2);
@@ -125,7 +145,7 @@ describe('Cursor', () => {
       ['a', 'b', 'c']
     );
 
-    onChange.mockReturnValueOnce(Immutable.fromJS({a:{b:{c:11}}}));
+    returnOnce(onChange, Immutable.fromJS({a:{b:{c:11}}}));
     // onChange returning something else has an effect
     newCursor = newCursor.update(x => 999);
     expect(newCursor.deref()).toBe(11);
@@ -136,11 +156,11 @@ describe('Cursor', () => {
     );
 
     // and update has been called exactly twice
-    expect(onChange.mock.calls.length).toBe(2);
+    expect(onChange.calls.length).toBe(2);
   });
 
   it('has map API for update shorthand', () => {
-    var onChange = jest.genMockFunction();
+    var onChange = jasmine.createSpy();
 
     var data = Immutable.fromJS(json);
     var aCursor = Cursor.from(data, 'a', onChange);
@@ -181,7 +201,7 @@ describe('Cursor', () => {
 
   it('returns wrapped values for sequence API', () => {
     var data = Immutable.fromJS({a: {v: 1}, b: {v: 2}, c: {v: 3}});
-    var onChange = jest.genMockFunction();
+    var onChange = jasmine.createSpy();
     var cursor = Cursor.from(data, onChange);
 
     var found = cursor.find(map => map.get('v') === 2);
@@ -230,7 +250,7 @@ describe('Cursor', () => {
   });
 
   it('can have mutations apply with a single callback', () => {
-    var onChange = jest.genMockFunction();
+    var onChange = jasmine.createSpy();
     var data = Immutable.fromJS({'a': 1});
 
     var c1 = Cursor.from(data, onChange);
@@ -238,11 +258,11 @@ describe('Cursor', () => {
 
     expect(c1.deref().toObject()).toEqual({'a': 1});
     expect(c2.deref().toObject()).toEqual({'a': 1, 'b': 2, 'c': 3, 'd': 4});
-    expect(onChange.mock.calls.length).toBe(1);
+    expect(onChange.calls.length).toBe(1);
   });
 
   it('can use withMutations on an unfulfilled cursor', () => {
-    var onChange = jest.genMockFunction();
+    var onChange = jasmine.createSpy();
     var data = Immutable.fromJS({});
 
     var c1 = Cursor.from(data, ['a', 'b', 'c'], onChange);
@@ -252,7 +272,7 @@ describe('Cursor', () => {
     expect(c2.deref()).toEqual(Immutable.fromJS(
       { x: 1, y: 2, z: 3 }
     ));
-    expect(onChange.mock.calls.length).toBe(1);
+    expect(onChange.calls.length).toBe(1);
   });
 
   it('maintains indexed sequences', () => {
@@ -269,7 +289,7 @@ describe('Cursor', () => {
   });
 
   it('can update deeply', () => {
-    var onChange = jest.genMockFunction();
+    var onChange = jasmine.createSpy();
     var data = Immutable.fromJS({a:{b:{c:1}}});
     var c = Cursor.from(data, ['a'], onChange);
     var c1 = c.updateIn(['b', 'c'], x => x * 10);
@@ -282,7 +302,7 @@ describe('Cursor', () => {
   });
 
   it('can set deeply', () => {
-    var onChange = jest.genMockFunction();
+    var onChange = jasmine.createSpy();
     var data = Immutable.fromJS({a:{b:{c:1}}});
     var c = Cursor.from(data, ['a'], onChange);
     var c1 = c.setIn(['b', 'c'], 10);
